@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.scheduling.config.ScheduledTask;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -85,7 +83,7 @@ public class ToDoController {
      * @return
      */
     @GetMapping("/2")
-    public ResponseEntity<Collection<ToDo>> doList(@RequestParam(name = "status") Optional<Boolean> status){
+    public ResponseEntity<Collection<ToDo>> doList(@Valid @RequestParam(name = "status") Optional<Boolean> status){
         // devolverá los no completados en caso de no ser indicado
         return ResponseEntity.ok().body(toDoService.getByStatus(status.orElseGet(() -> false)));
     }
@@ -95,7 +93,7 @@ public class ToDoController {
      * @return
      */
     @GetMapping("/2/user/{userid}")
-    public ResponseEntity<Collection<ToDo>> doListByUserId(@PathVariable(name = "userid") int userId){
+    public ResponseEntity<Collection<ToDo>> doListByUserId(@Valid @PathVariable(name = "userid") int userId){
         return ResponseEntity.ok().body(toDoService.getByUserId(userId));
     }
 
@@ -115,18 +113,6 @@ public class ToDoController {
     @GetMapping("/2/titles")
     public ResponseEntity<Collection<String>> doListTitles(){
         return ResponseEntity.ok().body(toDoService.getTitles());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return errors;
     }
 
 }
