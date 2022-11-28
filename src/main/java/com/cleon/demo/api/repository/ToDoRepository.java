@@ -13,7 +13,7 @@ public interface ToDoRepository extends CrudRepository<ToDo, Integer>, ToDoRepos
 
     Collection<ToDo> findByUserId(int userId);
 
-    @Query(value = "select t.title from todos t order by length(t.title) asc", nativeQuery = true)
+    @Query(value = "SELECT todos.title FROM todos ORDER BY length(todos.title) ASC", nativeQuery = true)
     Collection<String> findTitles();
 
     @Query(value = "select t.* from todos t where t.completed = :status", nativeQuery = true)

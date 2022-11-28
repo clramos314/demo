@@ -88,8 +88,23 @@ public class RestApiErrorHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_IMPLEMENTED);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Error> handleIllegalArgumentException(
+            HttpServletRequest request,
+            IllegalArgumentException ex,
+            Locale locale) {
+        Error error = ErrorUtils
+                .createError(String
+                                .format(FORMAT_1, ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION.getErrMsgKey(), ex.getMessage()),
+                        ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION.getErrCode(),
+                        HttpStatus.BAD_REQUEST.value()).setUrl(request.getRequestURL().toString())
+                .setReqMethod(request.getMethod())
+                .setTimestamp(Instant.now());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Error> handleMethodArgumentNotValidException(
             HttpServletRequest request,
             IllegalArgumentException ex,
             Locale locale) {
